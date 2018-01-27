@@ -1,0 +1,45 @@
+sudo: required
+
+env:
+  - PACKAGE_VERSION=2.0.3
+
+branches:
+  only:
+    - master
+
+services:
+  - docker
+
+# It is not really needed, other than for showing correct language tag in Travis CI build log.
+language: c
+
+before_install:
+  - docker pull ubuntu:16.04
+  - docker run -dt --name ubuntu-16 --privileged -v $(pwd)/:/work -e TRAVIS_BUILD_NUMBER=$TRAVIS_BUILD_NUMBER -e PACKAGE_VERSION=$PACKAGE_VERSION ubuntu:16.04
+
+install:
+  - docker exec -t ubuntu-16 bash -c "apt-get update;
+    apt-get install -y openvpn autoconf re2c libtool libldap2-dev libssl-dev gobjc make ruby ruby-dev rubygems build-essential"
+# The above isn't really needed since the build scripts will install dependencies anyway
+
+script:
+  - docker ps -a
+  - docker exec ubuntu-16 sh -c 'cd /work && ./ubuntu_16.04_lts_build.sh'
+  - docker exec ubuntu-16 sh -c 'cd /work && ./ubuntu_16.04_lts_package.sh'
+
+notifications:
+    email: false
+
+before_deploy:
+  - export RELEASE_PKG_FILE=$(ls *.deb)
+  - echo "deploying $RELEASE_PKG_FILE to GitHub releases"
+
+deploy:
+  provider: releases
+  api_key:
+    secure: "mQGfJDSxO8v5B1oG/XOLdltStBMs2DQsVG0GmGRWvt73aXizGRp7ji07dwqy67fh6Wj5cZ991iT2+lve6LLqQLJF2PyIOHVppHtBX7NMeNLqOjtHBSgerMs412WrFxlAifnxX0ikiC7cwvZdtN2QHjEuAOJUCXrIs06zGOs4CMLLSkjsVIHHTzImHyr1dzUqiiLTqvt8QKgrZK8HU4ks+PUl6cJR4IQngZhl2ryC/urIiA7Tn9mgeGEatK92RXCXdX79alxSM0bzZ2Ji023LjQKERPhxPlW2FSB1vxSXpO7io25B8BnAyJU2NmwN6AjcLLL6EmWyAygeOMkDkwlpzEuUwa3u1wA/oh1xmSUFQ67jFuWiBtIbMBu/NLEFfk9Yi9JvCTmyGr9JvHo/3CN+ehbQHCmjy9WW431SoR6bwUnTNLkWI/EtWN9Qm+OR073Np1b1Ynh0yiUE2PnM0fUf98CAqJJWAm+C+ZK4SmcDUrLniQVZhnyzhSDSV/tN2w9vCfnLXeluLOX43s989mk0x6FxHpWl9uLNv+h6L6zXnY/EPS2b3M9tkEDQKcrQalGT4Z/2yjtUEQ8UnlHR1jqJBE0isbD3YsYnpBAuHd8GuH3rgA9gUesxPuv9Pkwb672zSdxMgm2Zat9hDSk8YQNdcomjxv80/AQtkPpYF+GTeb4="
+  file_glob: true
+  file: "${RELEASE_PKG_FILE}"
+  skip_cleanup: true
+  on:
+    branch: master
