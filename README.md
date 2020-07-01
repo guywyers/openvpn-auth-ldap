@@ -1,3 +1,7 @@
+Travis build status: [![Build Status](https://travis-ci.org/snowrider311/openvpn-auth-ldap.svg?branch=master)](https://travis-ci.org/snowrider311/openvpn-auth-ldap)
+
+The latest Ubuntu 16.04 Debian package (built by Travis) can be found [here](https://github.com/snowrider311/openvpn-auth-ldap/releases/latest).
+
 ## Description
 
 The OpenVPN Auth-LDAP Plugin implements username/password authentication via LDAP for OpenVPN 2.x.
@@ -31,7 +35,7 @@ The module will be built in src/openvpn-auth-ldap.so and installed as
 
 #### Building On Ubuntu 16.04 ####
 
-The following steps were tested on a clean Ubuntu 16.04 LTS Amazon EC2 m5.large instance in January 2018 (source AMI: ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20180109 - ami-41e0b93b).
+The following steps were tested on a clean Ubuntu 16.04 LTS Amazon EC2 m5.large instance in January 2018 (source AMI: ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20180109 - ami-41e0b93b). These steps are also executed by Travis in a Docker container for every new commit made to this repository. The latest Ubuntu 16.04 Debian package (built by Travis) can be found [here](https://github.com/snowrider311/openvpn-auth-ldap/releases/latest).
 
 If you wish to repeat this process, follow these steps on your own machine:
 
@@ -49,7 +53,7 @@ If you then wish to create a Debian package, you can then run this script:
 ./ubuntu_16.04_lts_package.sh
 ```
 
-That script will install [FPM](https://github.com/jordansissel/fpm) and then use it to build a Debian package. If you then run `sudo dpkg -i openvpn-auth-ldap-snowrider311_2.0.3-1_amd64.deb`, then `openvpn-auth-ldap.so` will be installed to `/usr/lib/openvpn`, the same location as the standard, unforked `openvpn-auth-ldap` Debian package installs to. 
+That script will install [FPM](https://github.com/jordansissel/fpm) and then use it to build a Debian package. If you then run `sudo dpkg -i openvpn-auth-ldap-snowrider311_*_amd64.deb` (substitute the proper version number for the asterisk), then `openvpn-auth-ldap.so` will be installed to `/usr/lib/openvpn`, the same location as the standard, unforked `openvpn-auth-ldap` Debian package installs to. 
 
 Note: Superuser privileges are required to run these scripts.
 
